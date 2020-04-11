@@ -6,8 +6,8 @@
       <el-checkbox-group v-model="checkList">
         <el-checkbox
           v-for="item in todoList"
-          :key="item.vaue"
-          :label="item.value"
+          :key="item.id"
+          :label="item.id"
           v-show="selectedStatus === 0 || (selectedStatus === 1 ? !item.status : item.status)"
           @change="handleCheckedChange($event, item)"
         >
@@ -22,8 +22,8 @@
             @keyup.enter.native="handleEdit(item, false)"
           />
           <span>
-            <i class="el-icon-edit" @click.prevent="handleEdit(item, true)"></i>
-            <i class="el-icon-close" @click.prevent="hadleDelete(item.value)"></i>
+            <i class="icon el-icon-edit" @click.prevent="handleEdit(item, true)"></i>
+            <i class="icon el-icon-close" @click.prevent="hadleDelete(item.id)"></i>
           </span>
         </el-checkbox>
       </el-checkbox-group>
@@ -52,6 +52,7 @@ export default {
       todoList: [], // 所有状态的列表
       checkList: [], // 选中项列表
       selectedStatus: 0, // 0: 全部  1: 激活  2: 已完成
+      id: 0
     }
   },
   methods: {
@@ -59,16 +60,17 @@ export default {
     handleEnter () {
       console.log('handleEnter')
       if (!this.input) return
-      this.todoList.push({ value: this.input, status: false, isEdit: false })
+      this.todoList.push({ value: this.input, status: false, isEdit: false, id: this.id++ })
       if (this.selectedStatus === 2) {
         this.selectedStatus = 0
       }
       this.input = ''
     },
     // 删除事件
-    hadleDelete (val) {
-      console.log(val, 'hadleDelete')
-      this.todoList = this.todoList.filter(item => item.value !== val)
+    hadleDelete (id) {
+      console.log(id, 'hadleDelete')
+      this.todoList = this.todoList.filter(item => item.id !== id)
+      this.checkList = this.checkList.filter(item => item !== id)
     },
     // 监听选中改变事件
     handleCheckedChange (value, item) {
@@ -79,10 +81,11 @@ export default {
     handleClear () {
       console.log('handleClear')
       this.todoList = this.todoList.filter(item => item.status !== true)
+      this.checkList = []
     },
     // 编辑事件
     handleEdit (item, flag) {
-      console.log('handleEdit')
+      console.log(this.todoList, this.checkList, 'handleEdit')
       item.isEdit = flag
     }
   }
@@ -143,7 +146,7 @@ export default {
         line-height: 22px;
       }
     }
-    .el-icon-close {
+    .icon {
       color: #333 !important;
       margin-left: 12px;
       &:hover {
